@@ -1,0 +1,107 @@
+import requests
+from telegram import Update
+from telegram.ext import Application, CommandHandler, CallbackContext
+import logging
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+# Функция для проверки слотов
+async def check_slots(context: CallbackContext, chat_id: int):
+    url = 'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/62/doctors/2655999/specialties/psychologist/slots'
+
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            slots = data['slots']
+
+            if len(slots) > 0:
+                await context.bot.send_message(chat_id=chat_id, text="ЗАПИШИСЬ СРОЧНО!")
+            else:
+                await context.bot.send_message(chat_id=chat_id, text="У психолога пока нет свободных слотов.")
+        else:
+            await context.bot.send_message(chat_id=chat_id,
+                                           text=f'Ошибка при получении данных. Код статуса: {response.status_code}')
+    except Exception as e:
+        logger.error(f"Ошибка при обработке ответа: {e}")
+        await context.bot.send_message(chat_id=chat_id, text="Произошла ошибка при обработке данных.")
+
+
+# Команда для запуска проверки слотов
+async def check(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    jobs = context.job_queue.get_jobs_by_name(str(chat_id))
+
+    if jobs:
+        await update.message.reply_text("Проверка слотов уже запущена.")
+        return
+
+    delay = 10  # Интервал в секундах
+    delay_minutes = delay / 60  # Переводим в минуты
+    if delay_minutes < 1:
+        text = f"Проверка слотов запущена. Я буду проверять их наличие каждые {delay} секунд."
+    else:
+        text = f"Проверка слотов запущена. Я буду проверять их наличие каждые {delay_minutes: .1f} минут."
+
+    # Передаем chat_id в задачу
+    context.job_queue.run_repeating(
+        lambda ctx: check_slots(ctx, chat_id),  # Используем лямбду для передачи chat_id
+        interval=delay,
+        first=0,
+        data=chat_id,
+        name=str(chat_id)
+    )
+    await update.message.reply_text(text)
+
+
+# Команда для остановки проверки слотов
+async def stop(update: Update, context: CallbackContext):
+    chat_id = str(update.effective_chat.id)
+    jobs = context.job_queue.get_jobs_by_name(chat_id)
+
+    if jobs:
+        for job in jobs:
+            job.schedule_removal()
+        await update.message.reply_text("Проверка слотов остановлена.")
+    else:
+        await update.message.reply_text("Проверка слотов не была запущена.")
+
+
+# Команда для проверки статуса проверки слотов
+async def status(update: Update, context: CallbackContext):
+    chat_id = str(update.effective_chat.id)
+    jobs = context.job_queue.get_jobs_by_name(chat_id)
+
+    if jobs:
+        await update.message.reply_text("Проверка слотов активна.")
+    else:
+        await update.message.reply_text("Проверка слотов не активна.")
+
+
+async def manual_check(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    try:
+        await check_slots(context, chat_id)
+        await update.message.reply_text("Ручная проверка выполнена.")
+    except Exception as e:
+        logger.error(f"Ошибка при ручной проверке: {e}")
+        await update.message.reply_text("Произошла ошибка при ручной проверке.")
+
+
+# Токен вашего бота
+TOKEN = '7826213914:AAHMhg9Me0ZdEEFOIK9pAXJniv7WOWqxr7U'
+
+if __name__ == '__main__':
+    application = Application.builder().token(TOKEN).build()
+
+    # Добавляем обработчики команд
+    application.add_handler(CommandHandler('check', check))
+    application.add_handler(CommandHandler('stop', stop))
+    application.add_handler(CommandHandler('status', status))
+    application.add_handler(CommandHandler('manual_check', manual_check))
+
+    # Запускаем бота
+    application.run_polling()
