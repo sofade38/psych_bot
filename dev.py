@@ -2,6 +2,15 @@ import requests
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import logging
+from dotenv import load_dotenv
+import os
+
+# Загружаем переменные из .env
+load_dotenv()
+
+# Получаем токены
+TOKEN_DEV = os.getenv("TOKEN_DEV")
+TOKEN_PROD = os.getenv("TOKEN_PROD")
 
 # Настройка логирования с датой и временем
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -19,14 +28,10 @@ doctors = {
     "Минаева": 1954730
 }
 
-# Список ботов
-tokens = {
-    "dev": '8182753954:AAHTRa8Shq81UHIn6Xz9cdtVY4tK47fTQrs',
-    "prod": '7826213914:AAHMhg9Me0ZdEEFOIK9pAXJniv7WOWqxr7U'
-}
+
 # ___________________________________________ Основные переменные ______________________________________________________
 doctor_name = "Минаева"
-token = tokens["dev"]
+token = TOKEN_PROD
 delay = 120  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
