@@ -10,8 +10,8 @@ import os
 load_dotenv()
 
 # Получаем токены
-TOKEN_DEV = os.getenv("TOKEN_DEV")
-TOKEN_PROD = os.getenv("TOKEN_PROD")
+TOKEN = os.getenv("TOKEN")
+
 
 # Настройка логирования с датой и временем
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -32,7 +32,7 @@ doctors = {
 
 # ___________________________________________ Основные переменные ______________________________________________________
 doctor_name = "Минаева"
-token = TOKEN_PROD
+token = TOKEN
 delay = 120  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
