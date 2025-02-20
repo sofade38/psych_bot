@@ -5,7 +5,6 @@ import logging
 from dotenv import load_dotenv
 import os
 
-# ТЕСТИМ GIT ЖЕСТКО 111
 # Загружаем переменные из .env
 load_dotenv()
 
