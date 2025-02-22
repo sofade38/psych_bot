@@ -9,6 +9,7 @@
 
 /.idea
 
+
 /version archive/
 /config_dev.env
 /config_prod.env
