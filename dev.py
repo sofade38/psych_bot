@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 
 # Загружаем переменные из .env
-load_dotenv()
+load_dotenv("config.env")
 
 # Получаем токены
 TOKEN = os.getenv("TOKEN")
