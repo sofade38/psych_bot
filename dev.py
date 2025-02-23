@@ -10,6 +10,8 @@ load_dotenv("config.env")
 
 # Получаем токены
 TOKEN = os.getenv("TOKEN")
+DOCTOR_NAME = os.getenv("DOCTOR_NAME")
+DOCTOR_ID = os.getenv("DOCTOR_ID")
 
 
 # Настройка логирования с датой и временем
@@ -30,12 +32,13 @@ doctors = {
 
 
 # ___________________________________________ Основные переменные ______________________________________________________
-doctor_name = "Минаева"
+doctor_name = DOCTOR_NAME
+doctor_id = DOCTOR_ID
 token = TOKEN
 delay = 120  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
-url = f'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/62/doctors/{doctors[doctor_name]}/specialties/psychologist/slots'
+url = f'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/62/doctors/{doctor_id}/specialties/psychologist/slots'
 
 
 # Функция для проверки слотов
