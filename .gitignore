@@ -13,4 +13,4 @@
 /version archive/
 /config_dev.env
 /config_prod.env
-sandbox.py
+/sandbox.py
