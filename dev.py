@@ -8,12 +8,6 @@ import os
 # Загружаем переменные из .env
 load_dotenv("config.env")
 
-# Получаем токены
-TOKEN = os.getenv("TOKEN")
-DOCTOR_NAME = os.getenv("DOCTOR_NAME")
-DOCTOR_ID = os.getenv("DOCTOR_ID")
-
-
 # Настройка логирования с датой и временем
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.basicConfig(
@@ -23,18 +17,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Список психологов
-doctors = {
-    "Лунц": 2655999,
-    "Колоколкина": 2444744,
-    "Минаева": 1954730
-}
-
-
 # ___________________________________________ Основные переменные ______________________________________________________
-doctor_name = DOCTOR_NAME
-doctor_id = DOCTOR_ID
-token = TOKEN
+token = os.getenv("TOKEN")
+doctor_name = os.getenv("DOCTOR_NAME")
+doctor_id = os.getenv("DOCTOR_ID")
 delay = 120  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
