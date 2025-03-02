@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 token = os.getenv("TOKEN")
 doctor_name = os.getenv("DOCTOR_NAME")
 doctor_id = os.getenv("DOCTOR_ID")
-delay = 120  # Интервал в секундах
+delay = 10  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
 url = f'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/62/doctors/{doctor_id}/specialties/psychologist/slots'
@@ -48,9 +48,6 @@ async def check_slots(context: ContextTypes.DEFAULT_TYPE, chat_id: int = None):
     except Exception as e:
         logger.error(f"Ошибка при обработке ответа: {e}")
         await context.bot.send_message(chat_id=chat_id, text="Ошибка при обработке данных.")
-
-
-
 
 
 # Команда для запуска проверки слотов
