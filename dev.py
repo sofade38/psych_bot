@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 token = os.getenv("TOKEN")
 doctor_name = os.getenv("DOCTOR_NAME")
 doctor_id = os.getenv("DOCTOR_ID")
-delay = 10  # Интервал в секундах
+delay = 120  # Интервал в секундах
 # ______________________________________________________________________________________________________________________
 
 url = f'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/62/doctors/{doctor_id}/specialties/psychologist/slots'
