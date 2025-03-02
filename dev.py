@@ -28,41 +28,29 @@ url = f'https://telemed-patient-bff.sberhealth.ru/api/showcase/web/v1/providers/
 
 
 # Функция для проверки слотов
-async def check_slots(context: ContextTypes.DEFAULT_TYPE):
-    chat_id = context.job.chat_id
+async def check_slots(context: ContextTypes.DEFAULT_TYPE, chat_id: int = None):
+    if chat_id is None:
+        chat_id = context.job.chat_id
+
     try:
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
             slots = data['slots']
-
-            if len(slots) > 0:
-                await context.bot.send_message(chat_id=chat_id, text="Слоты есть!")
-        else:
-            await context.bot.send_message(chat_id=chat_id,
-                                           text=f'Ошибка при получении данных. Код статуса: {response.status_code}')
-    except Exception as e:
-        logger.error(f"Ошибка при обработке ответа: {e}")
-        await context.bot.send_message(chat_id=chat_id, text="Ошибка при обработке данных.")
-
-
-async def manual_check_slots(context: ContextTypes.DEFAULT_TYPE, chat_id: int):
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            slots = data['slots']
-
             if len(slots) > 0:
                 await context.bot.send_message(chat_id=chat_id, text="Слоты есть!")
             else:
-                await context.bot.send_message(chat_id=chat_id, text="Свободных слотов пока нет.")
+                if hasattr(context, 'manual_check') and context.manual_check:
+                    await context.bot.send_message(chat_id=chat_id, text="Свободных слотов пока нет.")
         else:
             await context.bot.send_message(chat_id=chat_id,
                                            text=f'Ошибка при получении данных. Код статуса: {response.status_code}')
     except Exception as e:
         logger.error(f"Ошибка при обработке ответа: {e}")
         await context.bot.send_message(chat_id=chat_id, text="Ошибка при обработке данных.")
+
+
+
 
 
 # Команда для запуска проверки слотов
@@ -118,7 +106,8 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def manual_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     try:
-        await manual_check_slots(context, chat_id)
+        context.manual_check = True
+        await check_slots(context, chat_id)
         await update.message.reply_text(f"Доктор {doctor_name}. Ручная проверка выполнена.")
     except Exception as e:
         logger.error(f"Ошибка при ручной проверке: {e}")
