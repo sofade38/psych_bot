@@ -111,8 +111,13 @@ async def manual_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Произошла ошибка при ручной проверке.")
 
 
+async def send_startup_message(application: Application):
+    chat_id = os.getenv("CHAT_ID")
+    await application.bot.send_message(chat_id, text="Бот запущен!")
+
+
 if __name__ == '__main__':
-    application = Application.builder().token(token).build()
+    application = Application.builder().token(token).post_init(send_startup_message).build()
 
     # Добавляем обработчики команд
     application.add_handler(CommandHandler('check', check))
